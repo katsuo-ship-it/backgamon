@@ -1,0 +1,33 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  syntax-check:
+    name: JS syntax check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run node --check on every JS module
+        run: |
+          fail=0
+          for f in js/*.js; do
+            if node --check "$f"; then
+              echo "OK: $f"
+            else
+              echo "FAIL: $f"
+              fail=1
+            fi
+          done
+          exit $fail

@@ -307,12 +307,14 @@ class GameController {
         const cb = this.expectedMoveCb;
         this.expectedMove = null;
         this.expectedMoveCb = null;
+        this.renderer.clearHintMove();
         cb?.(false);
         return;
       }
       const cb = this.expectedMoveCb;
       this.expectedMove = null;
       this.expectedMoveCb = null;
+      this.renderer.clearHintMove();
       this.applyHumanMoveAnim(move, () => cb?.(true));
       return;
     }
@@ -726,6 +728,8 @@ class GameController {
   expectPlayerMove(move, onDone) {
     this.expectedMove = move;
     this.expectedMoveCb = onDone;
+    // 動かすコマと移動先を視覚的に示す (パルスリング + 矢印)
+    this.renderer.setHintMove(move);
   }
 
   expectAnyMoveSequence(bestMoves, onDone) {

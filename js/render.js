@@ -206,6 +206,9 @@ export class Renderer {
     this.opponentPersona = null;
     this.opponentMood = "neutral";
     this.dprScale();
+    // ウィンドウリサイズに応じて内部解像度を再計算
+    this._onResize = () => this.dprScale();
+    window.addEventListener("resize", this._onResize);
   }
 
   setOpponentPersona(persona) { this.opponentPersona = persona; }
@@ -219,12 +222,19 @@ export class Renderer {
   }
 
   dprScale() {
+    // CSS 側のレスポンシブ表示サイズを取得し、それに DPR を掛けたものを内部解像度に設定。
+    // 描画コードは引き続き 1000x640 の論理座標を使うため、setTransform でスケール調整。
     const dpr = window.devicePixelRatio || 1;
-    this.canvas.width = BOARD_W * dpr;
-    this.canvas.height = BOARD_H * dpr;
-    this.canvas.style.width = BOARD_W + "px";
-    this.canvas.style.height = BOARD_H + "px";
-    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const rect = this.canvas.getBoundingClientRect();
+    const cssW = rect.width || BOARD_W;
+    const cssH = rect.height || BOARD_H;
+    const w = Math.max(1, Math.round(cssW * dpr));
+    const h = Math.max(1, Math.round(cssH * dpr));
+    if (this.canvas.width !== w) this.canvas.width = w;
+    if (this.canvas.height !== h) this.canvas.height = h;
+    const scaleX = (cssW * dpr) / BOARD_W;
+    const scaleY = (cssH * dpr) / BOARD_H;
+    this.ctx.setTransform(scaleX, 0, 0, scaleY, 0, 0);
   }
 
   // 与えた client 座標 (CSS px) を盤面ローカル座標に変換
@@ -584,12 +594,13 @@ export class Renderer {
     ctx.strokeStyle = "rgba(0,0,0,0.3)";
     ctx.lineWidth = 1;
     ctx.stroke();
-    // ポイント番号 (デバッグ・学習補助)
+    // ポイント番号 (1〜24): 学習補助のため明るめに
     ctx.save();
-    ctx.fillStyle = "rgba(255,255,255,0.25)";
-    ctx.font = "10px sans-serif";
+    ctx.fillStyle = COLORS().textGold;
+    ctx.globalAlpha = 0.75;
+    ctx.font = "bold 12px sans-serif";
     ctx.textAlign = "center";
-    const labelY = g.isTop ? PAD - 4 : BOARD_H - PAD + 12;
+    const labelY = g.isTop ? PAD - 6 : BOARD_H - PAD + 14;
     ctx.fillText(String(i + 1), g.x, labelY);
     ctx.restore();
   }
@@ -827,7 +838,7 @@ export class Renderer {
   }
 
   drawHintArrow(ctx, move) {
-    let from, to;
+    let from, to, destTri = null;
     if (move.from === -1) {
       const barG = barGeometry();
       from = [barG.x, BOARD_H / 2];
@@ -839,13 +850,38 @@ export class Renderer {
       const bo = bearOffGeometry();
       to = [bo.x, BOARD_H / 2];
     } else {
-      const g = pointGeometry(move.to);
-      to = [g.x, g.yTopOfStack];
+      destTri = pointGeometry(move.to);
+      to = [destTri.x, destTri.yTopOfStack];
     }
     const t = performance.now();
     const pulse = 0.5 + 0.5 * Math.sin(t / 250);
 
     ctx.save();
+    // 目的地のポイント三角形をフィル (移動先を明確に)
+    if (destTri) {
+      ctx.fillStyle = `rgba(255, 215, 100, ${0.25 + 0.18 * pulse})`;
+      ctx.beginPath();
+      ctx.moveTo(destTri.base1[0], destTri.base1[1]);
+      ctx.lineTo(destTri.base2[0], destTri.base2[1]);
+      ctx.lineTo(destTri.apex[0], destTri.apex[1]);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = "#ffd764";
+      ctx.lineWidth = 2.5;
+      ctx.globalAlpha = 0.7 + 0.3 * pulse;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    } else if (move.to === -1) {
+      // ベアオフ目的地: ベアオフ領域全体を強調
+      const bo = bearOffGeometry();
+      ctx.fillStyle = `rgba(255, 215, 100, ${0.15 + 0.12 * pulse})`;
+      ctx.fillRect(bo.xLeft, PAD, bo.width, BOARD_H - PAD * 2);
+      ctx.strokeStyle = "#ffd764";
+      ctx.lineWidth = 2;
+      ctx.globalAlpha = 0.6 + 0.3 * pulse;
+      ctx.strokeRect(bo.xLeft, PAD, bo.width, BOARD_H - PAD * 2);
+      ctx.globalAlpha = 1;
+    }
     // 起点のパルスリング (動かすコマを目立たせる)
     const ringR = CHECKER_R * (1.4 + 0.15 * pulse);
     const ringGrad = ctx.createRadialGradient(from[0], from[1], CHECKER_R * 0.6, from[0], from[1], ringR);

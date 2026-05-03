@@ -842,7 +842,30 @@ export class Renderer {
       const g = pointGeometry(move.to);
       to = [g.x, g.yTopOfStack];
     }
+    const t = performance.now();
+    const pulse = 0.5 + 0.5 * Math.sin(t / 250);
+
     ctx.save();
+    // 起点のパルスリング (動かすコマを目立たせる)
+    const ringR = CHECKER_R * (1.4 + 0.15 * pulse);
+    const ringGrad = ctx.createRadialGradient(from[0], from[1], CHECKER_R * 0.6, from[0], from[1], ringR);
+    ringGrad.addColorStop(0, "rgba(255, 215, 100, 0)");
+    ringGrad.addColorStop(0.7, `rgba(255, 215, 100, ${0.35 + 0.25 * pulse})`);
+    ringGrad.addColorStop(1, "rgba(255, 215, 100, 0)");
+    ctx.fillStyle = ringGrad;
+    ctx.beginPath();
+    ctx.arc(from[0], from[1], ringR, 0, Math.PI * 2);
+    ctx.fill();
+    // リング縁
+    ctx.strokeStyle = "#ffd764";
+    ctx.lineWidth = 3;
+    ctx.globalAlpha = 0.6 + 0.3 * pulse;
+    ctx.beginPath();
+    ctx.arc(from[0], from[1], CHECKER_R * 1.35, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // 矢印
     ctx.strokeStyle = "#ffd764";
     ctx.lineWidth = 4;
     ctx.setLineDash([8, 6]);
@@ -851,7 +874,6 @@ export class Renderer {
     ctx.lineTo(to[0], to[1]);
     ctx.stroke();
     ctx.setLineDash([]);
-    // 矢印先端
     const ang = Math.atan2(to[1] - from[1], to[0] - from[0]);
     ctx.fillStyle = "#ffd764";
     ctx.beginPath();

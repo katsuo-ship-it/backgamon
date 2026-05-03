@@ -362,13 +362,13 @@ export function showMatchEndModal(title, detail, onClose) {
 }
 
 // チュートリアル吹き出し
-// compact: true で盤面上部に小さく表示 (駒操作を妨げない)
-export function showTutorialBubble(title, text, { onNext, onSkip, hideNext, compact } = {}) {
+// 配置は CSS 側で応答的に決まる:
+//   広い画面 (≥1500px): 盤面右側のがら空きにドック
+//   狭い画面 (<1500px):  盤面上部にコンパクト表示
+export function showTutorialBubble(title, text, { onNext, onSkip, hideNext } = {}) {
   const overlay = document.getElementById("tutorial-overlay");
-  const bubble = overlay.querySelector(".tutorial-bubble");
   document.getElementById("tut-title").textContent = title;
   document.getElementById("tut-text").textContent = text;
-  bubble.classList.toggle("compact", !!compact);
   show(overlay);
   const next = document.getElementById("tut-next");
   const skip = document.getElementById("tut-skip");

@@ -171,10 +171,17 @@ class GameController {
     this.tutorialRunner = null;
     this.puzzleRunner = null;
     this.expectedMove = null;
+    this.expectedMoveCb = null;
     this.expectedSequenceMatcher = null;
+    this.demoCancelled = true;       // 進行中のデモループを止める
+    this.busy = false;               // 操作不能状態のリセット
     this.renderer.setCubeFocus(false);
     this.renderer.setShowCube(true);  // メニュー復帰時はデフォルトに戻す
     this.renderer.clearHintMove();
+    this.renderer.dragging = null;
+    this.renderer.movingChecker = null;
+    this.renderer.diceAnim = null;
+    this.renderer.clearHighlights();
     this.returnToMenu();
   }
 
@@ -199,8 +206,18 @@ class GameController {
     UI.setHintButtonRemaining(this.hintsRemaining);
     this.cubeJustOffered = false;
     this.review = new GameReview();
+    // 直前のモードから残った操作不能フラグや期待手をクリア
+    this.busy = false;
+    this.expectedMove = null;
+    this.expectedMoveCb = null;
+    this.expectedSequenceMatcher = null;
+    this.demoCancelled = true;
     // 対局・練習・パズル等ではキューブを表示 (チュートリアルでは loadCurrentLesson で個別制御)
     this.renderer.setShowCube(true);
+    this.renderer.dragging = null;
+    this.renderer.movingChecker = null;
+    this.renderer.clearHintMove();
+    this.renderer.clearHighlights();
     if (this.match) this.match.startNewGame();
     this.updateTopbarForMode();
     this.openingRoll();

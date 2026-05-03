@@ -159,6 +159,8 @@ class GameController {
   startPuzzle() {
     this.mode = "puzzle";
     this.match = null;
+    // パズルはキューブ判断とは無関係なので非表示
+    this.renderer.setShowCube(false);
     this.puzzleRunner = new PuzzleRunner(this);
     this.puzzleRunner.start();
     this.updateTopbarForMode();
@@ -171,6 +173,7 @@ class GameController {
     this.expectedMove = null;
     this.expectedSequenceMatcher = null;
     this.renderer.setCubeFocus(false);
+    this.renderer.setShowCube(true);  // メニュー復帰時はデフォルトに戻す
     this.renderer.clearHintMove();
     this.returnToMenu();
   }
@@ -196,6 +199,8 @@ class GameController {
     UI.setHintButtonRemaining(this.hintsRemaining);
     this.cubeJustOffered = false;
     this.review = new GameReview();
+    // 対局・練習・パズル等ではキューブを表示 (チュートリアルでは loadCurrentLesson で個別制御)
+    this.renderer.setShowCube(true);
     if (this.match) this.match.startNewGame();
     this.updateTopbarForMode();
     this.openingRoll();

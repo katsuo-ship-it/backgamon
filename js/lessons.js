@@ -84,9 +84,9 @@ export const LESSONS = [
     })(),
     steps: [
       { type: "narrate", text: "あるポイントに相手のコマが1個だけある状態を『ブロット』と呼びます。\nそのポイントに自分のコマで止まるとヒット成功！相手のコマはバー(中央)へ送り返されます。" },
-      { type: "rollFixed", dice: [4, 1], narration: "4 と 1 が出ました。\n12ポイントの白コマで、8ポイントにいる黒のブロットをヒットしましょう。" },
-      // 12(index12) → 8(index8): WHITE 進行 = index 減少 だから差 4
-      { type: "expectMove", move: { from: 12, to: 8 }, hint: "12ポイント白 → 8ポイント (ダイス4)。黒コマをヒット！" },
+      { type: "rollFixed", dice: [4, 1], narration: "4 と 1 が出ました。\n13ポイントの白コマで、9ポイントにいる黒のブロットをヒットしましょう。" },
+      // 13(index12) → 9(index8): WHITE 進行 = index 減少 だから差 4 (ポイント番号 = index + 1)
+      { type: "expectMove", move: { from: 12, to: 8 }, hint: "13ポイント白 → 9ポイント (ダイス4)。黒コマをヒット！" },
       // 残りの 1 を 24 → 23 など。23(index23) → 22(index22)
       { type: "expectMove", move: { from: 23, to: 22 }, hint: "余ったダイス1で 24ポイントから23ポイントへ動かしましょう" },
       { type: "narrate", text: "ヒットされた相手のコマは『バー』に置かれます。\nバーにコマがある間、その人は他のどのコマも動かせません。\nまず相手陣のホーム(黒なら白の右下、白なら黒の右上)に再進入する必要があります。" },
@@ -115,8 +115,8 @@ export const LESSONS = [
       return { board: b, bar: { [WHITE]: 0, [BLACK]: 0 }, borneOff: { [WHITE]: 0, [BLACK]: 0 }, turn: WHITE, dice: [] };
     })(),
     steps: [
-      { type: "narrate", text: "全コマが自陣ホーム(0~5ポイント)に揃ったら、いよいよベアオフ(上がり)です。\nダイス目とちょうど一致するポイントのコマを盤外に出せます。" },
-      { type: "rollFixed", dice: [6, 5], narration: "6 と 5 が出ました。\n6ポイント(index 5)のコマで6を使ってベアオフ。続いて5ポイントでベアオフ。" },
+      { type: "narrate", text: "全コマが自陣ホーム(1〜6ポイント)に揃ったら、いよいよベアオフ(上がり)です。\nダイス目とちょうど一致するポイントのコマを盤外に出せます。" },
+      { type: "rollFixed", dice: [6, 5], narration: "6 と 5 が出ました。\n6ポイントのコマで6を使ってベアオフ。続いて5ポイントでベアオフ。" },
       // 6 ポイント = index 5。to=-1 がベアオフ
       { type: "expectMove", move: { from: 5, to: -1, die: 6 }, hint: "6ポイントのコマを盤外へ (ダイス6)。" },
       { type: "expectMove", move: { from: 4, to: -1, die: 5 }, hint: "5ポイントのコマを盤外へ (ダイス5)。" },

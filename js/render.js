@@ -283,13 +283,14 @@ export class Renderer {
   setHintMove(move) { this.hintMove = move; }
   clearHintMove() { this.hintMove = null; }
 
-  startDiceRoll(roller, finalDice, duration = 700) {
+  startDiceRoll(roller, finalDice, duration = 1200) {
     this.diceAnim = {
       startTime: performance.now(),
       duration,
       finalDice,
       roller,
     };
+    this.diceSettledAt = null;
   }
 
   startMoveAnim(player, fromXY, toXY, duration, onDone) {
@@ -698,7 +699,9 @@ export class Renderer {
     const isAnim = !!this.diceAnim;
     let visibleDice = dice;
     let animProgress = 1;
+    let roller = game.turn;
     if (isAnim) {
+      roller = this.diceAnim.roller ?? game.turn;
       const t = (performance.now() - this.diceAnim.startTime) / this.diceAnim.duration;
       animProgress = Math.min(1, t);
       if (animProgress < 1) {
@@ -709,28 +712,54 @@ export class Renderer {
         ];
       } else {
         visibleDice = this.diceAnim.finalDice;
-        // アニメ終了 → 公式ダイスは setRoll で別途設定済み
         this.diceAnim = null;
+        this.diceSettledAt = performance.now();
       }
     }
     if (!visibleDice || visibleDice.length === 0) return;
 
-    // ダイス位置 (現プレイヤー側のクワドラント中央)
-    const player = isAnim ? this.diceAnim?.roller ?? game.turn : game.turn;
-    const isWhite = player === WHITE;
+    const isWhite = roller === WHITE;
     const cx = isWhite
       ? PAD + QUAD_W + BAR_W + QUAD_W * 0.5
       : PAD + QUAD_W * 0.5;
     const cy = BOARD_H / 2;
-    // ゾロ目だと 4 個表示
+    // ゾロ目は 4 個表示
     const diceToShow = (visibleDice.length >= 2 && visibleDice[0] === visibleDice[1])
       ? (game.dice.length === 4 ? game.dice : [visibleDice[0], visibleDice[0]])
       : visibleDice;
-    const spacing = 50;
+    const DIE_SIZE = 58;
+    const spacing = 70;
     const totalW = (diceToShow.length - 1) * spacing;
+
+    // 着地グロー (アニメ終了直後 800ms フェードアウト)
+    let glowAlpha = 0;
+    if (this.diceSettledAt) {
+      const t = (performance.now() - this.diceSettledAt) / 800;
+      if (t < 1) glowAlpha = (1 - t) * 0.7;
+      else this.diceSettledAt = null;
+    }
+
     diceToShow.forEach((v, i) => {
-      drawDie(ctx, cx - totalW/2 + i * spacing, cy, v, 44, {
-        rotation: isAnim ? Math.sin((performance.now() / 50) + i) * 0.3 : 0,
+      const dx = cx - totalW / 2 + i * spacing;
+      // ロール中はバウンド (各ダイスで位相をずらして自然に)
+      const t = performance.now();
+      const bounceY = isAnim ? Math.sin((t / 70) + i * 1.7) * 14 : 0;
+      const bounceX = isAnim ? Math.cos((t / 80) + i * 2.3) * 6  : 0;
+      const dy = cy + bounceY;
+      const dxF = dx + bounceX;
+      // 着地グロー
+      if (glowAlpha > 0) {
+        const grad = ctx.createRadialGradient(dx, cy, 0, dx, cy, DIE_SIZE * 1.1);
+        grad.addColorStop(0, `rgba(255, 215, 100, ${glowAlpha})`);
+        grad.addColorStop(0.5, `rgba(255, 215, 100, ${glowAlpha * 0.4})`);
+        grad.addColorStop(1, "rgba(255, 215, 100, 0)");
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(dx, cy, DIE_SIZE * 1.1, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      drawDie(ctx, dxF, dy, v, DIE_SIZE, {
+        rotation: isAnim ? Math.sin((t / 60) + i * 1.1) * 0.5 : 0,
       });
     });
   }

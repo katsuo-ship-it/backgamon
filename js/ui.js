@@ -365,18 +365,28 @@ export function showMatchEndModal(title, detail, onClose) {
 // 配置は CSS 側で応答的に決まる:
 //   広い画面 (≥1500px): 盤面右側のがら空きにドック
 //   狭い画面 (<1500px):  盤面上部にコンパクト表示
-export function showTutorialBubble(title, text, { onNext, onSkip, hideNext } = {}) {
+// onBack を渡すと「戻る」ボタンを有効化する。
+export function showTutorialBubble(title, text, { onNext, onSkip, onBack, hideNext } = {}) {
   const overlay = document.getElementById("tutorial-overlay");
   document.getElementById("tut-title").textContent = title;
   document.getElementById("tut-text").textContent = text;
   show(overlay);
   const next = document.getElementById("tut-next");
   const skip = document.getElementById("tut-skip");
+  const back = document.getElementById("tut-back");
   next.classList.toggle("hidden", !!hideNext);
-  const hN = () => { onNext?.(); next.removeEventListener("click", hN); skip.removeEventListener("click", hS); };
-  const hS = () => { onSkip?.(); next.removeEventListener("click", hN); skip.removeEventListener("click", hS); };
+  back.classList.toggle("hidden", !onBack);
+  const cleanup = () => {
+    next.removeEventListener("click", hN);
+    skip.removeEventListener("click", hS);
+    back.removeEventListener("click", hB);
+  };
+  const hN = () => { cleanup(); onNext?.(); };
+  const hS = () => { cleanup(); onSkip?.(); };
+  const hB = () => { cleanup(); onBack?.(); };
   next.addEventListener("click", hN);
   skip.addEventListener("click", hS);
+  back.addEventListener("click", hB);
 }
 export function hideTutorialBubble() { hide(document.getElementById("tutorial-overlay")); }
 

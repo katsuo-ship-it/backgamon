@@ -45,7 +45,7 @@ export function showReviewModal(review, onClose) {
         <h2>このゲームの振り返り</h2>
         <div id="review-body"></div>
         <div class="modal-actions">
-          <button id="btn-review-close" class="btn btn-primary">閉じる</button>
+          <button type="button" id="btn-review-close" class="btn btn-primary">閉じる</button>
         </div>
       </div>
     `;

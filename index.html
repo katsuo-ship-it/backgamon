@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>バックギャモン</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <h1>バックギャモン</h1>
+      <div class="score-display">
+        <span id="score-player">あなた: 0</span>
+        <span class="score-sep">―</span>
+        <span id="score-cpu">CPU: 0</span>
+        <span id="match-length-label" class="match-length"></span>
+      </div>
+      <div class="topbar-actions">
+        <button id="btn-undo" class="btn btn-ghost" title="待った（ターン内のみ）">待った</button>
+        <button id="btn-double" class="btn btn-ghost" title="ダブルを提示する">ダブル</button>
+        <button id="btn-resign" class="btn btn-ghost" title="このゲームを投了">投了</button>
+        <button id="btn-music" class="btn btn-ghost" title="環境音楽 ON/OFF">♪</button>
+        <button id="btn-menu" class="btn btn-ghost" title="メニューへ戻る">メニュー</button>
+      </div>
+    </header>
+
+    <main class="board-area">
+      <canvas id="board" width="1000" height="640"></canvas>
+
+      <div id="turn-banner" class="turn-banner hidden"></div>
+
+      <div id="tutorial-overlay" class="tutorial-overlay hidden">
+        <div class="tutorial-bubble">
+          <div class="tutorial-title" id="tut-title">レッスン</div>
+          <div class="tutorial-text" id="tut-text"></div>
+          <div class="tutorial-actions">
+            <button id="tut-skip" class="btn btn-ghost">スキップ</button>
+            <button id="tut-next" class="btn btn-primary">次へ</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- スタート画面モーダル -->
+    <div id="modal-start" class="modal">
+      <div class="modal-card">
+        <h2>はじめに</h2>
+        <p class="modal-lead">遊び方を選んでください。</p>
+
+        <div class="mode-tabs">
+          <button class="mode-tab active" data-mode="match">対局</button>
+          <button class="mode-tab" data-mode="tutorial">チュートリアル</button>
+        </div>
+
+        <section class="mode-pane" id="pane-match">
+          <div class="form-row">
+            <label>マッチ長</label>
+            <div class="seg-control" id="seg-match-length">
+              <button data-value="3">3 ポイント</button>
+              <button data-value="5" class="active">5 ポイント</button>
+              <button data-value="7">7 ポイント</button>
+              <button data-value="11">11 ポイント</button>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>難易度</label>
+            <div class="seg-control" id="seg-difficulty">
+              <button data-value="easy" class="active">簡易 AI</button>
+              <button data-value="hard">本格 AI</button>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button id="btn-start-match" class="btn btn-primary">対局開始</button>
+          </div>
+        </section>
+
+        <section class="mode-pane hidden" id="pane-tutorial">
+          <p class="modal-lead">
+            ルールを知らない方でも安心。実際にコマを動かしながら、
+            ステップごとにバックギャモンの基本を学べます。
+          </p>
+          <ul class="lesson-list" id="lesson-list">
+            <!-- JSが埋める -->
+          </ul>
+          <div class="modal-actions">
+            <button id="btn-start-tutorial" class="btn btn-primary">最初から始める</button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ダブル提示モーダル (CPU → 人) -->
+    <div id="modal-double" class="modal hidden">
+      <div class="modal-card narrow">
+        <h2>ダブルが提示されました</h2>
+        <p>CPU からダブルが提示されました。受けると賭け金が <span id="double-stake">2</span> 倍になります。</p>
+        <div class="modal-actions">
+          <button id="btn-double-take" class="btn btn-primary">受ける (テイク)</button>
+          <button id="btn-double-drop" class="btn">降りる (ドロップ)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ゲーム終了モーダル -->
+    <div id="modal-result" class="modal hidden">
+      <div class="modal-card narrow">
+        <h2 id="result-title">勝者</h2>
+        <p id="result-detail"></p>
+        <div class="modal-actions">
+          <button id="btn-next-game" class="btn btn-primary">次のゲームへ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- マッチ終了モーダル -->
+    <div id="modal-match-end" class="modal hidden">
+      <div class="modal-card narrow">
+        <h2 id="match-end-title">マッチ終了</h2>
+        <p id="match-end-detail"></p>
+        <div class="modal-actions">
+          <button id="btn-back-to-menu" class="btn btn-primary">メニューに戻る</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

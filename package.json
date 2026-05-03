@@ -1,0 +1,14 @@
+{
+  "name": "backgamon",
+  "version": "1.0.0",
+  "description": "ブラウザで遊ぶフル仕様のバックギャモン (CPU 対戦・チュートリアル・ストーリー・パズル)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "python -m http.server 8765",
+    "start": "python -m http.server 8765"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

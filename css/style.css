@@ -1,0 +1,408 @@
+/* ==== 基礎リセット ==== */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  font-family: "Yu Gothic UI", "Hiragino Kaku Gothic ProN", "Meiryo", system-ui, sans-serif;
+  color: #f3ead4;
+  background: radial-gradient(ellipse at top, #2a1d12 0%, #120a06 80%);
+  overflow: hidden;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ==== トップバー ==== */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 20px;
+  background: linear-gradient(180deg, #3a261688 0%, #1c0f0788 100%);
+  border-bottom: 1px solid #6b4a2a55;
+}
+.topbar h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #f1d79b;
+  letter-spacing: 0.05em;
+}
+.score-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  color: #ead7a8;
+}
+.score-display .score-sep { color: #8a6a44; }
+.match-length {
+  margin-left: 12px;
+  padding: 2px 8px;
+  border: 1px solid #6b4a2a;
+  border-radius: 999px;
+  font-size: 12px;
+  color: #c8a864;
+}
+
+.topbar-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+/* ==== ボタン ==== */
+.btn {
+  appearance: none;
+  border: 1px solid #7a5430;
+  background: linear-gradient(180deg, #4a3018 0%, #2c1a0c 100%);
+  color: #f3ead4;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.05s, background 0.15s, opacity 0.15s;
+}
+.btn:hover { background: linear-gradient(180deg, #5a3c20 0%, #34200f 100%); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-primary {
+  border-color: #c79b50;
+  background: linear-gradient(180deg, #c79b50 0%, #8a6a30 100%);
+  color: #1c0f07;
+  font-weight: 600;
+}
+.btn-primary:hover { background: linear-gradient(180deg, #d8ac60 0%, #997b3a 100%); }
+.btn-ghost {
+  background: transparent;
+  border-color: #6b4a2a;
+}
+.btn-ghost:hover { background: #3a261644; }
+
+/* ==== 盤面エリア ==== */
+.board-area {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+#board {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.6));
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: none;
+}
+
+.turn-banner {
+  position: absolute;
+  top: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20, 12, 6, 0.85);
+  border: 1px solid #c79b50;
+  color: #f3ead4;
+  padding: 6px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  pointer-events: none;
+}
+.hidden { display: none !important; }
+
+/* ==== チュートリアル吹き出し ==== */
+.tutorial-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+.tutorial-bubble {
+  pointer-events: auto;
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(640px, calc(100% - 48px));
+  background: linear-gradient(180deg, #2a1d12f5, #120a06f5);
+  border: 1px solid #c79b50;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+}
+.tutorial-title {
+  font-size: 13px;
+  color: #c79b50;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.tutorial-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #f3ead4;
+  white-space: pre-line;
+}
+.tutorial-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* ==== モーダル ==== */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.modal-card {
+  background: linear-gradient(180deg, #2a1d12 0%, #1c0f07 100%);
+  border: 1px solid #6b4a2a;
+  border-radius: 12px;
+  padding: 28px 32px;
+  width: min(560px, calc(100% - 48px));
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7);
+}
+.modal-card.narrow { width: min(420px, calc(100% - 48px)); }
+.modal-card h2 {
+  margin: 0 0 8px 0;
+  font-size: 22px;
+  color: #f1d79b;
+}
+.modal-lead {
+  margin: 0 0 16px 0;
+  color: #c8b48a;
+  font-size: 14px;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+/* ==== モードタブ ==== */
+.mode-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #6b4a2a55;
+}
+.mode-tab {
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 16px;
+  color: #c8b48a;
+  font-family: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+.mode-tab.active {
+  color: #f1d79b;
+  border-bottom-color: #c79b50;
+}
+
+/* ==== セグメンテッドコントロール ==== */
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.form-row > label {
+  flex: 0 0 80px;
+  color: #c8b48a;
+  font-size: 14px;
+}
+.seg-control {
+  display: flex;
+  border: 1px solid #6b4a2a;
+  border-radius: 6px;
+  overflow: hidden;
+  flex: 1;
+}
+.seg-control button {
+  flex: 1;
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-right: 1px solid #6b4a2a;
+  color: #c8b48a;
+  font-family: inherit;
+  font-size: 14px;
+  padding: 8px 4px;
+  cursor: pointer;
+}
+.seg-control button:last-child { border-right: none; }
+.seg-control button.active {
+  background: linear-gradient(180deg, #c79b50 0%, #8a6a30 100%);
+  color: #1c0f07;
+  font-weight: 600;
+}
+
+/* ==== レッスンリスト ==== */
+.lesson-list {
+  list-style: none;
+  margin: 0 0 8px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.lesson-list li {
+  padding: 8px 12px;
+  background: #1c0f07;
+  border: 1px solid #6b4a2a55;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #c8b48a;
+}
+.lesson-list li::before {
+  content: "▸ ";
+  color: #c79b50;
+}
+
+/* ==== 実績トースト ==== */
+.ach-toast {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  background: linear-gradient(180deg, #2a1d12f5, #120a06f5);
+  border: 1px solid #c79b50;
+  border-radius: 10px;
+  padding: 12px 18px;
+  color: #f3ead4;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+  z-index: 30;
+  transform: translateX(120%);
+  transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.4);
+}
+.ach-toast.show { transform: translateX(0); }
+.ach-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ffd764, #c79b50);
+  color: #1c0f07;
+  font-size: 22px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ach-title { color: #ffd764; font-weight: 600; font-size: 14px; }
+.ach-desc  { color: #c8b48a; font-size: 12px; margin-top: 2px; }
+
+/* ==== 着手品質バッジ ==== */
+.quality-badge {
+  position: fixed;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  background: rgba(20, 12, 6, 0.92);
+  border: 2px solid currentColor;
+  padding: 6px 18px;
+  border-radius: 999px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  pointer-events: none;
+  opacity: 0;
+  transition: all 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.4);
+  z-index: 8;
+}
+.quality-badge.show {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+  animation: badgePulse 2s ease-out forwards;
+}
+@keyframes badgePulse {
+  0%   { opacity: 0; transform: translateX(-50%) scale(0.6); }
+  10%  { opacity: 1; transform: translateX(-50%) scale(1.15); }
+  20%  { transform: translateX(-50%) scale(1); }
+  85%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) scale(1); }
+}
+
+/* ==== レビュー画面 ==== */
+.review-bar {
+  display: flex;
+  height: 24px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 12px 0;
+  background: #1c0f07;
+}
+.review-seg { transition: flex-basis 0.3s; }
+.review-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  color: #c8b48a;
+}
+.review-list li b { color: #f3ead4; }
+
+/* ==== ストーリーメニュー ==== */
+.story-card {
+  background: #1c0f07;
+  border: 1px solid #6b4a2a;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.story-card h3 { margin: 0 0 4px 0; color: #f1d79b; font-size: 16px; }
+.story-card .ch-meta { color: #c8b48a; font-size: 12px; }
+.story-card.locked { opacity: 0.4; }
+.story-card.cleared::after {
+  content: " ✓ クリア済";
+  color: #7eff8c;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ==== 実績ペイン (メニュー内) ==== */
+.ach-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.ach-tile {
+  background: #1c0f07;
+  border: 1px solid #6b4a2a55;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+.ach-tile.locked { opacity: 0.5; }
+.ach-tile.locked::before { content: "🔒 "; }
+.ach-tile.unlocked::before { content: "★ "; color: #ffd764; }
+.ach-tile-name { font-weight: 600; color: #f1d79b; }
+.ach-tile-desc { color: #c8b48a; margin-top: 2px; }
+
+/* ==== ペルソナリスト (ストーリーペイン用) ==== */
+.persona-row { display: flex; gap: 12px; align-items: center; }
+

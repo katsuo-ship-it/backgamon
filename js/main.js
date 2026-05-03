@@ -170,6 +170,8 @@ class GameController {
     this.puzzleRunner = null;
     this.expectedMove = null;
     this.expectedSequenceMatcher = null;
+    this.renderer.setCubeFocus(false);
+    this.renderer.clearHintMove();
     this.returnToMenu();
   }
 

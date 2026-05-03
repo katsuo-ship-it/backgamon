@@ -76,6 +76,8 @@ export class TutorialRunner {
     // ステップ開始時の状態を記録 (戻る用)
     this.saveSnapshotIfNeeded();
     const onBack = this.canGoBack() ? () => this.goBack() : null;
+    // ステップが要求するキューブハイライト
+    this.controller.renderer.setCubeFocus(!!step.focusCube);
 
     switch (step.type) {
       case "narrate": {

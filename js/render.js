@@ -205,8 +205,13 @@ export class Renderer {
     this.lastFrame = performance.now();
     this.opponentPersona = null;
     this.opponentMood = "neutral";
+    // 親要素のレイアウト確定後、および以降のリサイズに追従
     this.dprScale();
-    // ウィンドウリサイズに応じて内部解像度を再計算
+    requestAnimationFrame(() => this.dprScale());  // 初回レイアウト確定後に再計算
+    if (typeof ResizeObserver !== "undefined" && this.canvas.parentElement) {
+      this._ro = new ResizeObserver(() => this.dprScale());
+      this._ro.observe(this.canvas.parentElement);
+    }
     this._onResize = () => this.dprScale();
     window.addEventListener("resize", this._onResize);
   }
@@ -222,19 +227,29 @@ export class Renderer {
   }
 
   dprScale() {
-    // CSS 側のレスポンシブ表示サイズを取得し、それに DPR を掛けたものを内部解像度に設定。
-    // 描画コードは引き続き 1000x640 の論理座標を使うため、setTransform でスケール調整。
+    // 親コンテナの利用可能領域から「均等スケール」を計算し、アスペクト比 1000:640 を厳守。
+    // コマがオーバル化するのを防ぐため、横と縦のスケールを min() で統一する。
     const dpr = window.devicePixelRatio || 1;
-    const rect = this.canvas.getBoundingClientRect();
-    const cssW = rect.width || BOARD_W;
-    const cssH = rect.height || BOARD_H;
-    const w = Math.max(1, Math.round(cssW * dpr));
-    const h = Math.max(1, Math.round(cssH * dpr));
+    const parent = this.canvas.parentElement;
+    if (!parent) return;
+    const parentRect = parent.getBoundingClientRect();
+    // .board-area の padding 20px 分を引く + 余裕 8px
+    const availW = Math.max(200, parentRect.width  - 56);
+    const availH = Math.max(200, parentRect.height - 56);
+    const scaleX = availW / BOARD_W;
+    const scaleY = availH / BOARD_H;
+    // 均等スケール (大きい方は表示しきれないので min)。1.6 で頭打ちにして過度なボケを回避
+    const scale = Math.min(scaleX, scaleY, 1.6);
+    const dispW = BOARD_W * scale;
+    const dispH = BOARD_H * scale;
+    this.canvas.style.width = dispW + "px";
+    this.canvas.style.height = dispH + "px";
+    const w = Math.max(1, Math.round(dispW * dpr));
+    const h = Math.max(1, Math.round(dispH * dpr));
     if (this.canvas.width !== w) this.canvas.width = w;
     if (this.canvas.height !== h) this.canvas.height = h;
-    const scaleX = (cssW * dpr) / BOARD_W;
-    const scaleY = (cssH * dpr) / BOARD_H;
-    this.ctx.setTransform(scaleX, 0, 0, scaleY, 0, 0);
+    const pixelScale = scale * dpr;
+    this.ctx.setTransform(pixelScale, 0, 0, pixelScale, 0, 0);
   }
 
   // 与えた client 座標 (CSS px) を盤面ローカル座標に変換

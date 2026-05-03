@@ -91,13 +91,8 @@ body {
   justify-content: center;
   padding: 20px;
 }
-/* 盤面: 視認性のためビューポートに合わせて拡大縮小。アスペクト比 1000:640 を維持 */
+/* 盤面: 表示サイズは JS の dprScale で均等スケール計算 (アスペクト比 1000:640 厳守) */
 #board {
-  width: 100%;
-  height: auto;
-  max-width: min(95vw, 1500px);
-  max-height: calc(100vh - 100px);
-  aspect-ratio: 1000 / 640;
   display: block;
   filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.6));
   -webkit-user-select: none;

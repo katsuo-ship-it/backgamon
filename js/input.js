@@ -2,7 +2,7 @@
 // クリックでも操作できるよう、タップ的な扱いも内蔵 (短押しでハイライトのみ)。
 
 import { legalSingleMovesFrom, legalOrigins } from "./rules.js";
-import { CHECKER_R } from "./render.js";
+import { CHECKER_R, pointGeometry, bearOffGeometry } from "./render.js";
 
 export class InputHandler {
   constructor(canvas, renderer, ctrl) {
@@ -83,21 +83,38 @@ export class InputHandler {
     e.preventDefault();
     const p = this.pointer(e);
     const { x, y } = this.renderer.clientToBoard(p.clientX, p.clientY);
-    const game = this.ctrl.game;
-    const dest = this.renderer.pickDestination(game, x, y);
-    const drag = this.renderer.dragging;
     this.renderer.dragging = null;
     this.renderer.clearHighlights();
 
-    // 合法な目的地か?
-    const valid = this.dragValidDests.find(m => m.to === dest);
-    if (!valid) {
+    // 距離ベースで合法な目的地に snap (厳密なヒット判定だと数px外しただけで戻ってしまうため)
+    let valid = null;
+    let bestDist = Infinity;
+    for (const m of this.dragValidDests) {
+      const d = this._destDistance(m.to, x, y);
+      if (d < bestDist) {
+        bestDist = d;
+        valid = m;
+      }
+    }
+    // 100px (論理座標) 以内なら snap、それ以上ならキャンセル
+    if (!valid || bestDist > 100) {
       this.dragValidDests = [];
       this.ctrl.onDragCancel?.();
       return;
     }
     this.dragValidDests = [];
-    // 着手を要求
     this.ctrl.requestHumanMove(valid);
+  }
+
+  // 目的地ポイント (or ベアオフ) の中心と (x,y) の距離
+  _destDistance(to, x, y) {
+    if (to === -1) {
+      // ベアオフ: 領域内なら 0、外なら左端からの水平距離
+      const bo = bearOffGeometry();
+      if (x >= bo.xLeft) return 0;
+      return bo.xLeft - x;
+    }
+    const g = pointGeometry(to);
+    return Math.hypot(g.x - x, g.yTopOfStack - y);
   }
 }

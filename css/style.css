@@ -135,7 +135,19 @@ body {
   border-radius: 12px;
   padding: 16px 20px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+  transition: bottom 0.2s, top 0.2s, width 0.2s, padding 0.2s;
 }
+/* インタラクティブステップ用: 盤面の上に小さく表示し、駒の操作を妨げない */
+.tutorial-bubble.compact {
+  top: 12px;
+  bottom: auto;
+  width: min(440px, calc(100% - 48px));
+  padding: 8px 14px;
+  background: linear-gradient(180deg, #2a1d12ee, #120a06ee);
+}
+.tutorial-bubble.compact .tutorial-title { font-size: 11px; margin-bottom: 2px; }
+.tutorial-bubble.compact .tutorial-text  { font-size: 13px; line-height: 1.5; }
+.tutorial-bubble.compact .tutorial-actions { margin-top: 6px; }
 .tutorial-title {
   font-size: 13px;
   color: #c79b50;

@@ -51,6 +51,7 @@ export class TutorialRunner {
       case "rollFixed": {
         showTutorialBubble(L.title, step.narration ?? "サイコロを振ります...", {
           hideNext: true,
+          compact: true,
           onSkip: () => this.controller.exitTutorial(),
         });
         // 強制ダイスを振る
@@ -63,6 +64,7 @@ export class TutorialRunner {
       case "expectMove": {
         showTutorialBubble(L.title, step.hint, {
           hideNext: true,
+          compact: true,
           onSkip: () => this.controller.exitTutorial(),
         });
         this.controller.expectPlayerMove(step.move, (success) => {
@@ -79,6 +81,7 @@ export class TutorialRunner {
       case "cpuScripted": {
         showTutorialBubble(L.title, step.narration ?? "CPUが手を進めます...", {
           hideNext: true,
+          compact: true,
           onSkip: () => this.controller.exitTutorial(),
         });
         this.controller.tutorialCpuScripted(step.dice, step.moves, () => {

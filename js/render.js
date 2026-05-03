@@ -791,36 +791,73 @@ export class Renderer {
   }
 
   drawCube(ctx, game) {
-    const cx = BOARD_W - PAD - BEAROFF_W - 38;
+    // バー中央 (中立) / バー下端 (WHITE 所有) / バー上端 (BLACK 所有) に配置
+    const barG = barGeometry();
+    const cx = barG.x;
     let cy;
-    if (game.cube.owner === WHITE) cy = BOARD_H - PAD - 30;
-    else if (game.cube.owner === BLACK) cy = PAD + 30;
-    else cy = BOARD_H / 2 - POINT_H - 14;
+    if (game.cube.owner === WHITE) cy = BOARD_H - PAD - 38;
+    else if (game.cube.owner === BLACK) cy = PAD + 38;
+    else cy = BOARD_H / 2;
 
-    const size = 42;
+    // チュートリアル中はパルスフォーカスで強調
+    const t = performance.now();
+    const pulse = 0.5 + 0.5 * Math.sin(t / 250);
+
+    const size = 52;
     ctx.save();
+    if (this.cubeFocus) {
+      // フォーカスリング (脈動)
+      const ringR = size * (0.85 + 0.15 * pulse);
+      const grad = ctx.createRadialGradient(cx, cy, size * 0.5, cx, cy, ringR);
+      grad.addColorStop(0, "rgba(255, 215, 100, 0)");
+      grad.addColorStop(0.6, `rgba(255, 215, 100, ${0.4 + 0.3 * pulse})`);
+      grad.addColorStop(1, "rgba(255, 215, 100, 0)");
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, ringR, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#ffd764";
+      ctx.lineWidth = 3;
+      ctx.globalAlpha = 0.7 + 0.3 * pulse;
+      ctx.beginPath();
+      ctx.arc(cx, cy, size * 0.75, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
     // 影
-    ctx.fillStyle = "rgba(0,0,0,0.5)";
-    roundRect(ctx, cx - size/2 + 2, cy - size/2 + 2, size, size, 6);
+    ctx.fillStyle = "rgba(0,0,0,0.55)";
+    roundRect(ctx, cx - size/2 + 3, cy - size/2 + 3, size, size, 8);
     ctx.fill();
-    // 本体
+    // 本体 (3D 風グラデーション)
     const grad = ctx.createLinearGradient(cx - size/2, cy - size/2, cx + size/2, cy + size/2);
-    grad.addColorStop(0, "#f1d79b");
-    grad.addColorStop(1, "#a8843a");
+    grad.addColorStop(0, "#fff1c0");
+    grad.addColorStop(0.55, "#e1b760");
+    grad.addColorStop(1, "#8a6420");
     ctx.fillStyle = grad;
-    roundRect(ctx, cx - size/2, cy - size/2, size, size, 6);
+    roundRect(ctx, cx - size/2, cy - size/2, size, size, 8);
     ctx.fill();
-    ctx.strokeStyle = "#5a3c20";
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = "#3a2614";
+    ctx.lineWidth = 2;
     ctx.stroke();
+    // ハイライト (上部の光沢)
+    ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
+    roundRect(ctx, cx - size/2 + 4, cy - size/2 + 4, size - 8, size * 0.35, 5);
+    ctx.fill();
     // 数字
     ctx.fillStyle = "#1c0f07";
-    ctx.font = "bold 18px sans-serif";
+    ctx.font = "bold 22px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(String(game.cube.value), cx, cy);
+    ctx.fillText(String(game.cube.value), cx, cy + 1);
+    // 「ダブル」ラベル (識別用)
+    ctx.fillStyle = COLORS().textGold;
+    ctx.font = "bold 10px sans-serif";
+    ctx.textBaseline = "alphabetic";
+    const labelY = (cy < BOARD_H / 2) ? cy + size/2 + 14 : cy - size/2 - 6;
+    ctx.fillText("ダブル", cx, labelY);
     ctx.restore();
   }
+  setCubeFocus(on) { this.cubeFocus = !!on; }
 
   drawPipPanel(ctx, info) {
     const x = BOARD_W - PAD - BEAROFF_W - 130;

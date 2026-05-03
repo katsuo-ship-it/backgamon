@@ -20,11 +20,11 @@
         <span id="match-length-label" class="match-length"></span>
       </div>
       <div class="topbar-actions">
-        <button id="btn-undo" class="btn btn-ghost" title="待った（ターン内のみ）">待った</button>
-        <button id="btn-double" class="btn btn-ghost" title="ダブルを提示する">ダブル</button>
-        <button id="btn-resign" class="btn btn-ghost" title="このゲームを投了">投了</button>
-        <button id="btn-music" class="btn btn-ghost" title="環境音楽 ON/OFF">♪</button>
-        <button id="btn-menu" class="btn btn-ghost" title="メニューへ戻る">メニュー</button>
+        <button type="button" id="btn-undo" class="btn btn-ghost" title="待った（ターン内のみ）">待った</button>
+        <button type="button" id="btn-double" class="btn btn-ghost" title="ダブルを提示する">ダブル</button>
+        <button type="button" id="btn-resign" class="btn btn-ghost" title="このゲームを投了">投了</button>
+        <button type="button" id="btn-music" class="btn btn-ghost" title="環境音楽 ON/OFF">♪</button>
+        <button type="button" id="btn-menu" class="btn btn-ghost" title="メニューへ戻る">メニュー</button>
       </div>
     </header>
 
@@ -38,8 +38,8 @@
           <div class="tutorial-title" id="tut-title">レッスン</div>
           <div class="tutorial-text" id="tut-text"></div>
           <div class="tutorial-actions">
-            <button id="tut-skip" class="btn btn-ghost">スキップ</button>
-            <button id="tut-next" class="btn btn-primary">次へ</button>
+            <button type="button" id="tut-skip" class="btn btn-ghost">スキップ</button>
+            <button type="button" id="tut-next" class="btn btn-primary">次へ</button>
           </div>
         </div>
       </div>
@@ -52,29 +52,29 @@
         <p class="modal-lead">遊び方を選んでください。</p>
 
         <div class="mode-tabs">
-          <button class="mode-tab active" data-mode="match">対局</button>
-          <button class="mode-tab" data-mode="tutorial">チュートリアル</button>
+          <button type="button" class="mode-tab active" data-mode="match">対局</button>
+          <button type="button" class="mode-tab" data-mode="tutorial">チュートリアル</button>
         </div>
 
         <section class="mode-pane" id="pane-match">
           <div class="form-row">
             <label>マッチ長</label>
             <div class="seg-control" id="seg-match-length">
-              <button data-value="3">3 ポイント</button>
-              <button data-value="5" class="active">5 ポイント</button>
-              <button data-value="7">7 ポイント</button>
-              <button data-value="11">11 ポイント</button>
+              <button type="button" data-value="3">3 ポイント</button>
+              <button type="button" data-value="5" class="active">5 ポイント</button>
+              <button type="button" data-value="7">7 ポイント</button>
+              <button type="button" data-value="11">11 ポイント</button>
             </div>
           </div>
           <div class="form-row">
             <label>難易度</label>
             <div class="seg-control" id="seg-difficulty">
-              <button data-value="easy" class="active">簡易 AI</button>
-              <button data-value="hard">本格 AI</button>
+              <button type="button" data-value="easy" class="active">簡易 AI</button>
+              <button type="button" data-value="hard">本格 AI</button>
             </div>
           </div>
           <div class="modal-actions">
-            <button id="btn-start-match" class="btn btn-primary">対局開始</button>
+            <button type="button" id="btn-start-match" class="btn btn-primary">対局開始</button>
           </div>
         </section>
 
@@ -87,7 +87,7 @@
             <!-- JSが埋める -->
           </ul>
           <div class="modal-actions">
-            <button id="btn-start-tutorial" class="btn btn-primary">最初から始める</button>
+            <button type="button" id="btn-start-tutorial" class="btn btn-primary">最初から始める</button>
           </div>
         </section>
       </div>
@@ -99,8 +99,8 @@
         <h2>ダブルが提示されました</h2>
         <p>CPU からダブルが提示されました。受けると賭け金が <span id="double-stake">2</span> 倍になります。</p>
         <div class="modal-actions">
-          <button id="btn-double-take" class="btn btn-primary">受ける (テイク)</button>
-          <button id="btn-double-drop" class="btn">降りる (ドロップ)</button>
+          <button type="button" id="btn-double-take" class="btn btn-primary">受ける (テイク)</button>
+          <button type="button" id="btn-double-drop" class="btn">降りる (ドロップ)</button>
         </div>
       </div>
     </div>
@@ -111,7 +111,7 @@
         <h2 id="result-title">勝者</h2>
         <p id="result-detail"></p>
         <div class="modal-actions">
-          <button id="btn-next-game" class="btn btn-primary">次のゲームへ</button>
+          <button type="button" id="btn-next-game" class="btn btn-primary">次のゲームへ</button>
         </div>
       </div>
     </div>
@@ -122,7 +122,7 @@
         <h2 id="match-end-title">マッチ終了</h2>
         <p id="match-end-detail"></p>
         <div class="modal-actions">
-          <button id="btn-back-to-menu" class="btn btn-primary">メニューに戻る</button>
+          <button type="button" id="btn-back-to-menu" class="btn btn-primary">メニューに戻る</button>
         </div>
       </div>
     </div>

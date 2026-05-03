@@ -166,13 +166,13 @@ function ensureExtraButtons() {
     <div class="form-row">
       <label>難易度</label>
       <div class="seg-control" id="seg-practice-difficulty">
-        <button data-value="easy" class="active">やさしい AI</button>
-        <button data-value="normal">ふつう AI</button>
-        <button data-value="hard">つよい AI</button>
+        <button type="button" data-value="easy" class="active">やさしい AI</button>
+        <button type="button" data-value="normal">ふつう AI</button>
+        <button type="button" data-value="hard">つよい AI</button>
       </div>
     </div>
     <div class="modal-actions">
-      <button id="btn-start-practice" class="btn btn-primary">練習を始める</button>
+      <button type="button" id="btn-start-practice" class="btn btn-primary">練習を始める</button>
     </div>
   `;
   modalCard.appendChild(panePractice);
@@ -186,7 +186,7 @@ function ensureExtraButtons() {
       固定盤面の「ベストムーブを当てる」パズルです。腕試しに。
     </p>
     <div class="modal-actions">
-      <button id="btn-start-puzzle" class="btn btn-primary">パズルに挑戦</button>
+      <button type="button" id="btn-start-puzzle" class="btn btn-primary">パズルに挑戦</button>
     </div>
   `;
   modalCard.appendChild(panePuzzle);
@@ -195,10 +195,10 @@ function ensureExtraButtons() {
   const segDiff = document.getElementById("seg-difficulty");
   if (segDiff) {
     segDiff.innerHTML = `
-      <button data-value="easy" class="active">やさしい</button>
-      <button data-value="normal">ふつう</button>
-      <button data-value="hard">つよい</button>
-      <button data-value="master">達人</button>
+      <button type="button" data-value="easy" class="active">やさしい</button>
+      <button type="button" data-value="normal">ふつう</button>
+      <button type="button" data-value="hard">つよい</button>
+      <button type="button" data-value="master">達人</button>
     `;
   }
 
@@ -211,7 +211,7 @@ function ensureExtraButtons() {
       <label>ルール</label>
       <div class="seg-control" id="seg-variant">
         ${Object.entries(VARIANTS).map(([k, v], i) =>
-          `<button data-value="${k}" ${i === 0 ? 'class="active"' : ''}>${v.name}</button>`
+          `<button type="button" data-value="${k}"${i === 0 ? ' class="active"' : ''}>${v.name}</button>`
         ).join("")}
       </div>
     `;

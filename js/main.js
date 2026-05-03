@@ -239,7 +239,7 @@ class GameController {
       } else {
         this.evaluateCubeOfferOpportunity();
       }
-    }, 700);
+    }, 1200);
   }
 
   // -------- ターンの開始 (ダイスロール) --------
@@ -261,7 +261,7 @@ class GameController {
       this.game.setRoll(d1, d2);
       this.busy = false;
       this.afterRoll();
-    }, 700);
+    }, 1200);
   }
 
   afterRoll() {
@@ -687,6 +687,30 @@ class GameController {
     this.game.cube = { value: 1, owner: 0 };
   }
 
+  // チュートリアルの「戻る」で呼ばれる: クローンしたスナップショットでゲーム状態を完全に置き換える
+  restoreFromTutorialSnapshot(snapGame) {
+    this.game = snapGame;
+    this.busy = false;
+    this.expectedMove = null;
+    this.expectedMoveCb = null;
+    this.expectedSequenceMatcher = null;
+    // 進行中のドラッグや移動アニメをキャンセル
+    this.renderer.dragging = null;
+    this.renderer.movingChecker = null;
+    this.renderer.diceAnim = null;
+    this.renderer.clearHighlights();
+    this.renderer.clearHintMove();
+  }
+
+  // チュートリアル戻る時に進行中の expect を破棄
+  cancelTutorialExpectations() {
+    this.expectedMove = null;
+    this.expectedMoveCb = null;
+    this.expectedSequenceMatcher = null;
+    // ダミー: 重複呼び出しの安全のため
+    this.busy = false;
+  }
+
   tutorialForceRoll(dice, onDone) {
     const [d1, d2] = dice;
     this.busy = true;
@@ -696,7 +720,7 @@ class GameController {
       this.game.setRoll(d1, d2);
       this.busy = false;
       onDone?.();
-    }, 700);
+    }, 1200);
   }
 
   expectPlayerMove(move, onDone) {

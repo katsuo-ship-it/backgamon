@@ -49,8 +49,9 @@ export class TutorialRunner {
 
   goBack() {
     if (!this.canGoBack()) return;
-    // 現在ステップで進行中の expect/animation などを controller 側で停止
+    // 現在ステップで進行中の expect/animation/demo などを停止
     this.controller.cancelTutorialExpectations();
+    this.controller.cancelTutorialDemo?.();
     // ひとつ前のステップへ
     this.stepIndex--;
     const snap = this.snapshots[this.stepIndex];
@@ -129,6 +130,18 @@ export class TutorialRunner {
         this.controller.tutorialCpuScripted(step.dice, step.moves, () => {
           this.stepIndex++;
           setTimeout(() => this.runStep(), 250);
+        });
+        break;
+      }
+      case "autoBearOff": {
+        showTutorialBubble(L.title, step.narration ?? "AIが代わりに最後まで上がっていきます...", {
+          hideNext: true,
+          onSkip: () => { this.controller.cancelTutorialDemo(); this.controller.exitTutorial(); },
+          onBack,
+        });
+        this.controller.tutorialAutoBearOff(() => {
+          this.stepIndex++;
+          setTimeout(() => this.runStep(), 400);
         });
         break;
       }

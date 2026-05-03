@@ -732,6 +732,65 @@ class GameController {
     }, 1200);
   }
 
+  // チュートリアル用: WHITE のベアオフが完了するまで AI が高速デモする
+  // BLACK には手番を渡さず、WHITE が連続でロール&ベアオフを繰り返す
+  async tutorialAutoBearOff(onDone) {
+    this.demoCancelled = false;
+    const delay = (ms) => new Promise(r => setTimeout(r, ms));
+    const animMove = (player, move) => new Promise(resolve => {
+      const fromXY = move.from === -1
+        ? this.renderer.barCenter(player)
+        : this.renderer.pointCenter(player, move.from);
+      const toXY = move.to === -1
+        ? this.renderer.pointCenter(player, -1)
+        : this.renderer.pointCenter(player, move.to);
+      this.renderer.startMoveAnim(player, fromXY, toXY, 0.10, resolve);
+    });
+
+    let safety = 0;
+    while (this.game.borneOff[WHITE] < 15 && !this.demoCancelled && safety < 100) {
+      safety++;
+      // 高速ロール (300ms)
+      const d1 = 1 + Math.floor(Math.random() * 6);
+      const d2 = 1 + Math.floor(Math.random() * 6);
+      this.busy = true;
+      this.renderer.startDiceRoll(WHITE, [d1, d2], 250);
+      Sound.play("dice");
+      await delay(280);
+      this.game.setRoll(d1, d2);
+
+      // やさしい AI で着手選択
+      const seq = await chooseMove(this.game, "easy");
+      if (!seq || seq.length === 0) {
+        // パス (起こりにくいが)
+        this.game.dice = [];
+        this.game.history = [];
+        await delay(100);
+        continue;
+      }
+
+      // 各着手を高速アニメで実行
+      for (const move of seq) {
+        if (this.demoCancelled) break;
+        await animMove(WHITE, move);
+        this.game.applyMove(move);
+        Sound.play("place");
+      }
+
+      // 次のロールへ。turn は WHITE のまま、dice/history のみクリア
+      this.game.dice = [];
+      this.game.history = [];
+      await delay(120);
+    }
+
+    this.busy = false;
+    if (this.game.borneOff[WHITE] === 15) {
+      this.effects.bearOffLast();
+    }
+    onDone?.();
+  }
+  cancelTutorialDemo() { this.demoCancelled = true; }
+
   expectPlayerMove(move, onDone) {
     this.expectedMove = move;
     this.expectedMoveCb = onDone;

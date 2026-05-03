@@ -136,6 +136,7 @@ export const LESSONS = [
   {
     title: "レッスン 5 / 5",
     name: "ダブリングキューブ・ギャモン",
+    showCube: true,
     initial: { board: standardBoard(), bar: { [WHITE]: 0, [BLACK]: 0 }, borneOff: { [WHITE]: 0, [BLACK]: 0 }, turn: WHITE, dice: [] },
     steps: [
       { type: "narrate", focusCube: true, text: "盤面中央(バー)に光っているキューブが『ダブリングキューブ』です。\n自分が有利な局面でダブルを提示すると、賭け金が2倍に。\n相手は受ける(テイク)か降りる(ドロップ)を選びます。" },

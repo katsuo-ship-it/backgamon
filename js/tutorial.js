@@ -31,6 +31,8 @@ export class TutorialRunner {
     this.controller.setupGameFromLesson(init);
     // レッスンが切り替わるとスナップショットも初期化 (レッスン跨ぎの戻るは非対応)
     this.snapshots = [];
+    // キューブ表示はレッスン側の showCube フラグで決定。指定なければ非表示。
+    this.controller.renderer.setShowCube(!!L.showCube);
   }
 
   // 現在のステップ開始時の state をスナップショットする (未保存ならば)

@@ -205,6 +205,7 @@ export class Renderer {
     this.lastFrame = performance.now();
     this.opponentPersona = null;
     this.opponentMood = "neutral";
+    this.showCube = true;   // false でキューブ描画を完全スキップ (チュートリアル前半など)
     // 親要素のレイアウト確定後、および以降のリサイズに追従
     this.dprScale();
     requestAnimationFrame(() => this.dprScale());  // 初回レイアウト確定後に再計算
@@ -791,6 +792,7 @@ export class Renderer {
   }
 
   drawCube(ctx, game) {
+    if (!this.showCube) return;
     // バー中央 (中立) / バー下端 (WHITE 所有) / バー上端 (BLACK 所有) に配置
     const barG = barGeometry();
     const cx = barG.x;
@@ -858,6 +860,7 @@ export class Renderer {
     ctx.restore();
   }
   setCubeFocus(on) { this.cubeFocus = !!on; }
+  setShowCube(on) { this.showCube = !!on; }
 
   drawPipPanel(ctx, info) {
     const x = BOARD_W - PAD - BEAROFF_W - 130;

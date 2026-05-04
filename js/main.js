@@ -361,9 +361,18 @@ class GameController {
       if (this.game.dice.length === 0) {
         this.judgePlayerTurn();
         this.endTurn();
-      } else {
-        this.evaluateCubeOfferOpportunity();
+        return;
       }
+      // 残ダイスで合法手が一つも無ければ自動でパス (ユーザがコマを動かせず固まるのを防ぐ)
+      const seqs = legalMoveSequences(this.game, this.game.dice);
+      const hasMove = seqs.some(s => s.sequence.length > 0);
+      if (!hasMove) {
+        UI.setTurnBanner(`残ダイス ${this.game.dice.join("/")} 使えず、パス。`);
+        this.judgePlayerTurn();
+        setTimeout(() => this.endTurn(), 900);
+        return;
+      }
+      this.evaluateCubeOfferOpportunity();
     });
   }
 

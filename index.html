@@ -29,6 +29,12 @@
     </header>
 
     <main class="board-area">
+      <!-- ダブリングキューブ (DOM オーバーレイで盤面上のコマと干渉しない) -->
+      <div id="cube-display" class="cube-display hidden">
+        <span class="cube-label">ダブル</span>
+        <span class="cube-value">1</span>
+        <span class="cube-owner">中立</span>
+      </div>
       <canvas id="board" width="1000" height="640"></canvas>
 
       <div id="turn-banner" class="turn-banner hidden"></div>

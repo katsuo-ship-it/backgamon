@@ -322,21 +322,23 @@ function populateLessonList() {
 export function showStartScreen() { show(document.getElementById("modal-start")); }
 export function hideStartScreen() { hide(document.getElementById("modal-start")); }
 
+// クローン&置換でボタンの全リスナーを確実にクリアし、新しいハンドラを 1 つだけ付ける
+function setSingleClickHandler(buttonId, handler) {
+  const old = document.getElementById(buttonId);
+  if (!old) return null;
+  const fresh = old.cloneNode(true);
+  old.parentNode.replaceChild(fresh, old);
+  fresh.addEventListener("click", handler);
+  return fresh;
+}
+
 // ダブル提示モーダル
 export function showDoubleModal(stake, onTake, onDrop) {
   const modal = document.getElementById("modal-double");
   document.getElementById("double-stake").textContent = stake;
   show(modal);
-  const take = document.getElementById("btn-double-take");
-  const drop = document.getElementById("btn-double-drop");
-  const handlerTake = () => { hide(modal); cleanup(); onTake?.(); };
-  const handlerDrop = () => { hide(modal); cleanup(); onDrop?.(); };
-  function cleanup() {
-    take.removeEventListener("click", handlerTake);
-    drop.removeEventListener("click", handlerDrop);
-  }
-  take.addEventListener("click", handlerTake);
-  drop.addEventListener("click", handlerDrop);
+  setSingleClickHandler("btn-double-take", () => { hide(modal); onTake?.(); });
+  setSingleClickHandler("btn-double-drop", () => { hide(modal); onDrop?.(); });
 }
 
 // ゲーム結果モーダル
@@ -345,9 +347,7 @@ export function showResultModal(title, detail, onNext) {
   document.getElementById("result-title").textContent = title;
   document.getElementById("result-detail").textContent = detail;
   show(modal);
-  const btn = document.getElementById("btn-next-game");
-  const handler = () => { hide(modal); btn.removeEventListener("click", handler); onNext?.(); };
-  btn.addEventListener("click", handler);
+  setSingleClickHandler("btn-next-game", () => { hide(modal); onNext?.(); });
 }
 
 // マッチ終了モーダル
@@ -356,9 +356,7 @@ export function showMatchEndModal(title, detail, onClose) {
   document.getElementById("match-end-title").textContent = title;
   document.getElementById("match-end-detail").textContent = detail;
   show(modal);
-  const btn = document.getElementById("btn-back-to-menu");
-  const handler = () => { hide(modal); btn.removeEventListener("click", handler); onClose?.(); };
-  btn.addEventListener("click", handler);
+  setSingleClickHandler("btn-back-to-menu", () => { hide(modal); onClose?.(); });
 }
 
 // チュートリアル吹き出し
@@ -371,22 +369,14 @@ export function showTutorialBubble(title, text, { onNext, onSkip, onBack, hideNe
   document.getElementById("tut-title").textContent = title;
   document.getElementById("tut-text").textContent = text;
   show(overlay);
-  const next = document.getElementById("tut-next");
-  const skip = document.getElementById("tut-skip");
-  const back = document.getElementById("tut-back");
-  next.classList.toggle("hidden", !!hideNext);
-  back.classList.toggle("hidden", !onBack);
-  const cleanup = () => {
-    next.removeEventListener("click", hN);
-    skip.removeEventListener("click", hS);
-    back.removeEventListener("click", hB);
-  };
-  const hN = () => { cleanup(); onNext?.(); };
-  const hS = () => { cleanup(); onSkip?.(); };
-  const hB = () => { cleanup(); onBack?.(); };
-  next.addEventListener("click", hN);
-  skip.addEventListener("click", hS);
-  back.addEventListener("click", hB);
+  // 自動進行ステップ (rollFixed 等) では showTutorialBubble が連続で呼ばれ、
+  // 前回のリスナーが残ったまま新しいリスナーが追加されると複数発火する。
+  // クローン&置換で確実に 1 つだけのハンドラに保つ。
+  const next = setSingleClickHandler("tut-next", () => onNext?.());
+  setSingleClickHandler("tut-skip", () => onSkip?.());
+  const back = setSingleClickHandler("tut-back", () => onBack?.());
+  if (next) next.classList.toggle("hidden", !!hideNext);
+  if (back) back.classList.toggle("hidden", !onBack);
 }
 export function hideTutorialBubble() { hide(document.getElementById("tutorial-overlay")); }
 

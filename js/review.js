@@ -69,11 +69,12 @@ export function showReviewModal(review, onClose) {
     <p style="color:#c8b48a;">平均ロス: ${summary.avgDiff.toFixed(1)} 点 (低いほど良い手)</p>
   `;
   modal.classList.remove("hidden");
-  const btn = modal.querySelector("#btn-review-close");
-  const handler = () => {
+  // クローン&置換でリスナー累積を防止
+  const oldBtn = modal.querySelector("#btn-review-close");
+  const btn = oldBtn.cloneNode(true);
+  oldBtn.parentNode.replaceChild(btn, oldBtn);
+  btn.addEventListener("click", () => {
     modal.classList.add("hidden");
-    btn.removeEventListener("click", handler);
     onClose?.();
-  };
-  btn.addEventListener("click", handler);
+  });
 }

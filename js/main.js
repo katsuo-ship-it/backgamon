@@ -105,11 +105,37 @@ class GameController {
           }
         }
       }
+      this.updateCubeDisplay();
       if (game) this.renderer.draw(game, ctxInfo);
       else this.renderer.draw(emptyGameForBackdrop(), {});
       requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
+  }
+
+  // 盤面右上の DOM キューブ表示を game.cube + renderer.showCube/cubeFocus に同期
+  updateCubeDisplay() {
+    const el = document.getElementById("cube-display");
+    if (!el) return;
+    const visible = !!this.game && !!this.renderer.showCube;
+    el.classList.toggle("hidden", !visible);
+    if (!visible) return;
+    const cube = this.game.cube;
+    const valueEl = el.querySelector(".cube-value");
+    const ownerEl = el.querySelector(".cube-owner");
+    if (valueEl) valueEl.textContent = String(cube.value);
+    el.classList.remove("owner-white", "owner-black", "owner-neutral");
+    if (cube.owner === WHITE) {
+      el.classList.add("owner-white");
+      if (ownerEl) ownerEl.textContent = "あなた所有";
+    } else if (cube.owner === BLACK) {
+      el.classList.add("owner-black");
+      if (ownerEl) ownerEl.textContent = `${this.persona?.name ?? "相手"}所有`;
+    } else {
+      el.classList.add("owner-neutral");
+      if (ownerEl) ownerEl.textContent = "中立";
+    }
+    el.classList.toggle("focus", !!this.renderer.cubeFocus);
   }
 
   // -------- モード起動 --------

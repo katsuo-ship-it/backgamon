@@ -113,6 +113,57 @@ body {
   font-size: 14px;
   pointer-events: none;
 }
+
+/* ==== ダブリングキューブ (DOM オーバーレイ) ==== */
+.cube-display {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(180deg, #fff1c0 0%, #c79b50 50%, #8a6420 100%);
+  color: #1c0f07;
+  border: 2px solid #3a2614;
+  border-radius: 8px;
+  padding: 4px 14px;
+  min-width: 56px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5),
+              inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  font-family: inherit;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.cube-display .cube-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+  margin-bottom: 1px;
+}
+.cube-display .cube-value {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+}
+.cube-display .cube-owner {
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 2px;
+  opacity: 0.8;
+}
+.cube-display.owner-white { border-color: #f3ead4; box-shadow: 0 0 0 2px #f3ead488, 0 6px 16px rgba(0,0,0,0.5); }
+.cube-display.owner-black { border-color: #1a120a; box-shadow: 0 0 0 2px #5a4a3088, 0 6px 16px rgba(0,0,0,0.5); }
+.cube-display.focus {
+  animation: cubePulse 1.4s ease-in-out infinite;
+}
+@keyframes cubePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 215, 100, 0.7), 0 6px 16px rgba(0,0,0,0.5); }
+  50%      { box-shadow: 0 0 0 10px rgba(255, 215, 100, 0), 0 6px 16px rgba(0,0,0,0.5); }
+}
 .hidden { display: none !important; }
 
 /* ==== チュートリアル吹き出し ==== */

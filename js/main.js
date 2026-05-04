@@ -420,20 +420,28 @@ class GameController {
   // -------- CPU ターン --------
   async scheduleCpuTurn() {
     UI.setButtonsEnabled({ double: false });
-    // ダブル提示判断
-    if (this.mode === "match" && !this.cubeJustOffered) {
-      const canBlackOffer = this.match.canOfferDouble(this.game, BLACK);
-      if (canBlackOffer) {
-        const cubeDecision = chooseCube(this.game, this.difficulty);
-        if (cubeDecision.offerDouble) {
-          this.cpuOffersDouble();
-          return;
+    // ダイスがまだ振られていない場合のみ「ダブル提示判断 → ロール」を行う。
+    // afterRoll() から再エントリされた時はダイスが既に揃っているので、即着手フェーズへ。
+    // (この分岐がないと scheduleCpuTurn → startTurn → afterRoll → scheduleCpuTurn と無限再帰)
+    if (!this.game.dice || this.game.dice.length === 0) {
+      // ダブル提示判断 (ロール前のみ)
+      if (this.mode === "match" && !this.cubeJustOffered) {
+        const canBlackOffer = this.match.canOfferDouble(this.game, BLACK);
+        if (canBlackOffer) {
+          const cubeDecision = chooseCube(this.game, this.difficulty);
+          if (cubeDecision.offerDouble) {
+            this.cpuOffersDouble();
+            return;
+          }
         }
       }
+      // ダイスを振る (startTurn 内で setTimeout 後に afterRoll → scheduleCpuTurn 再エントリ)
+      this.startTurn();
+      return;
     }
-    this.startTurn();
+    // ダイスは揃っている — 着手フェーズへ
     if (this.busy) {
-      // ダイスロールアニメ中。終了後に afterRoll → CPU 動作
+      // ダイスロールアニメ中。終了後に CPU 動作
       const wait = setInterval(() => {
         if (!this.busy) {
           clearInterval(wait);
